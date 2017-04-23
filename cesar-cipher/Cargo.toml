@@ -1,0 +1,6 @@
+[package]
+name = "cesar-cipher"
+version = "0.1.0"
+authors = ["pawel"]
+
+[dependencies]
