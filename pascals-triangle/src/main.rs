@@ -1,35 +1,30 @@
 fn main() {
-    let triangle = build_triangle(10);
+    let triangle = pascals_triangle(30);
     for row in triangle {
     	println!("{:?}", row);
     }
 }
 
-fn build_triangle(rows: i32) -> Vec<Vec<i32>> {
-	let mut result:Vec<Vec<i32>> = vec![];
-	while result.len() <= rows as usize {
-		let previous_row = result.pop().unwrap_or(vec![]);
-		let next_row = build_row(&previous_row);
-		result.push(previous_row);
-		result.push(next_row);
+fn calculate_value(row: i32, index: i32) -> i32 {
+	if index < 0 || index > row {
+		0
+	} else if index == 1 || index == row {
+		1
+	} else {
+		calculate_value(row - 1, index -1) + calculate_value(row - 1, index)
 	}
-	result.remove(0);
-	return result;
 }
 
-fn build_row(previous_row: &Vec<i32>) -> Vec<i32> {
-	if previous_row.is_empty() {
-		vec![1]
-	} else if previous_row.len() == 1 {
-		vec![1,1]
-	} else {
-		let mut result = vec![1];
-		for index in 0..previous_row.len()-1 {
-			result.push(previous_row[index] + previous_row[index+1]);
-		}
-		result.push(1);
-		return result;
-	}
+fn caluclate_row(row: i32) -> Vec<i32> {
+	(1..row + 1)
+		.map(|index| calculate_value(row, index))
+		.collect::<Vec<i32>>()
+}
+
+fn pascals_triangle(rows:i32) -> Vec<Vec<i32>> {
+	(1..rows + 1)
+		.map(|row| caluclate_row(row))
+		.collect::<Vec<Vec<i32>>>()
 }
 
 #[cfg(test)]
@@ -37,22 +32,18 @@ mod test {
 	use super::*;
 
 	#[test]
-	fn should_build_triangle_row() {
-		//http://mathforum.org/workshops/usi/pascal/images/row8sum.gif
+	fn should_build_pascals_triangle() {
 		assert_eq!(
-			build_row(&vec![1]), 
-			vec![1,1]);
-
-		assert_eq!(
-			build_row(&vec![1,1]), 
-			vec![1, 2, 1]);
-
-		assert_eq!(
-			build_row(&vec![1, 3, 3, 1]),
-			vec![1, 4, 6, 4, 1]);
-
-		assert_eq!(
-			build_row(&vec![1, 8, 28, 56, 70, 56, 28, 8, 1]),
-			vec!(1, 9, 36, 84, 126, 126, 84, 36, 9, 1));
+			pascals_triangle(8),
+			vec![
+				vec![1],
+				vec![1, 1],
+				vec![1, 2, 1],
+				vec![1, 3, 3, 1],
+				vec![1, 4, 6, 4, 1],
+				vec![1, 5, 10, 10, 5, 1],
+				vec![1, 6, 15, 20, 15, 6, 1],
+				vec![1, 7, 21, 35, 35, 21, 7, 1]
+			]);
 	}
 }
